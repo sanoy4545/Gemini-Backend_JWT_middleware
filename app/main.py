@@ -1,14 +1,19 @@
 
 from fastapi import FastAPI
+from app.middleware import JWTAuthMiddleware, ErrorHandlerMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import engine, AsyncSessionLocal, Base
 from app.core.redis_client import redis_client
 
 from app.routes import auth
+from app.routes import user
+from app.routes import chatroom
 from app.utils import jwt
 
 
 app = FastAPI()
+app.add_middleware(ErrorHandlerMiddleware)
+app.add_middleware(JWTAuthMiddleware)
 
 @app.on_event("startup")
 async def startup():
@@ -26,3 +31,5 @@ async def root():
 
 # Routers
 app.include_router(auth.router)
+app.include_router(user.router)
+app.include_router(chatroom.router)

@@ -1,3 +1,5 @@
+
+
 from pydantic import BaseModel
 
 
@@ -12,4 +14,14 @@ class OTPRequest(BaseModel):
 class OTPVerify(BaseModel):
     mobile: str
     otp: str
+
+class ChangePassword(BaseModel):
+    old_password: str = None
+    new_password: str
+
+class MessageCreate(BaseModel):
+    content: str
+
+class ChatroomCreate(BaseModel):
+    name: str
 
