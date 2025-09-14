@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+aiomysql
+sqlalchemy[asyncio]
+redis
+python-jose[cryptography]
+stripe
+httpx
+python-dotenv

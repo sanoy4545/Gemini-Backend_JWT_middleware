@@ -1,0 +1,28 @@
+
+from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import engine, AsyncSessionLocal, Base
+from app.core.redis_client import redis_client
+
+from app.routes import auth
+from app.utils import jwt
+
+
+app = FastAPI()
+
+@app.on_event("startup")
+async def startup():
+    # Create tables if not exist
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    # Test Redis connection
+    await redis_client.ping()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Gemini-style backend API"}
+
+
+# Routers
+app.include_router(auth.router)
