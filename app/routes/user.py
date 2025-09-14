@@ -12,12 +12,14 @@ async def get_db():
         yield session
 
 @router.get("/me", response_class=JSONResponse)
-async def get_me(current_user: User = Depends(get_current_user)):
-    if not current_user:
-        return JSONResponse(status_code=401, content={"success": False, "message": "Unauthorized"})
+async def get_me(request: Request,current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    '''mobile = getattr(request.state, "user_mobile", None)
+    if not mobile:
+        return JSONResponse(status_code=401, content={"success": False, "message": "Unauthorized"})'''
     return JSONResponse(status_code=200, content={
         "success": True,
         "id": current_user.id,
-        "mobile": current_user.mobile,
-        "name": current_user.name
+        "name": current_user.name,
+        "plan": current_user.subscription.lower(),
+        "mobile": current_user.mobile, 
     })

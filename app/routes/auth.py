@@ -23,16 +23,16 @@ async def get_db():
         yield session
         
         
-# Dependency to get current user from JWT
+# Dependency to get current user from JWT middleware
 async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)):
-    auth_header = request.headers.get("authorization")
-    if not auth_header or not auth_header.lower().startswith("bearer "):
-        return None
+    mobile = getattr(request.state, "user_mobile", None)
+    '''auth_header = request.headers.get("authorization",None)
+    if not auth_header:
+            return 
     token = auth_header.split(" ", 1)[1]
-    payload = verify_access_token(token)
-    if not payload or "sub" not in payload:
-        return None
-    mobile = payload["sub"]
+    mobile = verify_access_token(token).get("sub") if token else None
+    if not mobile:
+        return None'''
     result = await db.execute(select(User).where(User.mobile == mobile))
     user = result.scalars().first()
     return user
