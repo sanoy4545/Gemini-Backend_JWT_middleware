@@ -8,6 +8,8 @@ from app.routes import auth
 from app.routes import user
 from app.routes import chatroom
 from app.routes import subscribe
+from app.routes import webhook
+from app.routes import subscription
 from app.utils import jwt
 
 
@@ -34,3 +36,5 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(chatroom.router)
 app.include_router(subscribe.router)
+app.include_router(webhook.router)
+app.include_router(subscription.router)

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import AsyncSessionLocal
+ 
 from app.models.chatroom import Chatroom
-from app.routes.auth import get_current_user
+from app.utils.user import get_current_user
 from app.schemas import ChatroomCreate
 from app.schemas_chatroom import ChatroomOut
 from app.core.redis_client import redis_client
@@ -17,9 +17,7 @@ from datetime import datetime
 
 router = APIRouter(prefix="/chatroom", tags=["chatroom"])
 
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
+from app.utils.db import get_db
 
 
 @router.post("/", response_class=JSONResponse)
@@ -105,13 +103,15 @@ async def post_message(chatroom_id: int, data: MessageCreate, current_user=Depen
     from asyncio import sleep
     ai_message = None
     for _ in range(40):  # Wait up to ~20 seconds (40 x 0.5s)
-        async with AsyncSessionLocal() as poll_db:
+        async for poll_db in get_db():
             result = await poll_db.execute(
                 select(Message).where(
                     (Message.chatroom_id == chatroom.id) & (Message.sender == "ai")
                 ).order_by(Message.created_at.desc())
             )
             ai_message = result.scalars().first()
+            if ai_message and ai_message.created_at > message.created_at:
+                break
         if ai_message and ai_message.created_at > message.created_at:
             break
         await sleep(0.5)

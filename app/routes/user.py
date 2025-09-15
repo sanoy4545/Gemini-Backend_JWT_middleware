@@ -1,15 +1,12 @@
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import AsyncSessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession 
 from app.models.user import User
-from app.routes.auth import get_current_user
+from app.utils.user import get_current_user
 from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/user", tags=["user"])
 
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
+from app.utils.db import get_db
 
 @router.get("/me", response_class=JSONResponse)
 async def get_me(request: Request,current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):

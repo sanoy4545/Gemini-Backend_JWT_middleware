@@ -7,3 +7,4 @@ python-jose[cryptography]
 stripe
 httpx
 python-dotenv
+google-gemini

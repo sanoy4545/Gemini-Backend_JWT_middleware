@@ -1,48 +1,24 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import AsyncSessionLocal
+from app.utils.db import get_db
 from app.models.user import User
 from fastapi import HTTPException, status
 from app.schemas import UserSignup, OTPRequest, OTPVerify, ChangePassword
 from app.utils.jwt import create_access_token, verify_access_token
+from app.utils.user import get_current_user
+from app.utils.otp import generate_otp
 from app.core.redis_client import redis_client
 from passlib.context import CryptContext
-import random
+
 from fastapi.responses import JSONResponse
 from fastapi import Header, Request
 from sqlalchemy import select
 
 
-router = APIRouter(prefix='/auth', tags=["auth"])
 
+router = APIRouter(prefix='/auth', tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
-        
-        
-# Dependency to get current user from JWT middleware
-async def get_current_user(request: Request, db: AsyncSession = Depends(get_db)):
-    mobile = getattr(request.state, "user_mobile", None)
-    '''auth_header = request.headers.get("authorization",None)
-    if not auth_header:
-            return 
-    token = auth_header.split(" ", 1)[1]
-    mobile = verify_access_token(token).get("sub") if token else None
-    if not mobile:
-        return None'''
-    result = await db.execute(select(User).where(User.mobile == mobile))
-    user = result.scalars().first()
-    return user
-
-
-def generate_otp(length: int = 6) -> str:
-    """Generate a numeric OTP of given length."""
-    range_start = 10**(length-1)
-    range_end = (10**length)-1
-    return str(random.randint(range_start, range_end))
 
 
 

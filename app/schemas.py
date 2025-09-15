@@ -1,27 +1,25 @@
 
-
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class UserSignup(BaseModel):
-    mobile: str
-    name: str
-    password: str = None
+    mobile: int = Field(..., gt=0)
+    name: str = Field(..., min_length=1)
+    password: str = Field(..., min_length=6)
 
 class OTPRequest(BaseModel):
-    mobile: str
-    
+    mobile: int = Field(..., gt=0)
+
 class OTPVerify(BaseModel):
-    mobile: str
-    otp: str
+    mobile: int = Field(..., gt=0)
+    otp: str = Field(..., min_length=4)
 
 class ChangePassword(BaseModel):
-    old_password: str = None
-    new_password: str
+    old_password: str = Field(None, min_length=6)
+    new_password: str = Field(..., min_length=6)
 
 class MessageCreate(BaseModel):
-    content: str
+    content: str = Field(..., min_length=1)
 
 class ChatroomCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1)
 

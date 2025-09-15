@@ -6,7 +6,7 @@ import stripe
 router = APIRouter(prefix="/subscribe", tags=["subscribe"])
 
 STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
-STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "price_12345")  # Set your actual Stripe price ID here
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "Price_12345")  # Set your actual Stripe price ID here
 stripe.api_key = STRIPE_API_KEY
 
 @router.post("/pro", response_class=JSONResponse, status_code=status.HTTP_201_CREATED)
